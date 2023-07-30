@@ -17,7 +17,8 @@ const TodoModel = sequelize.define('todo', {
     text: {type: DataTypes.STRING, allowNull: false},
     description: {type: DataTypes.STRING},
     completed: {type: DataTypes.BOOLEAN, defaultValue: false},
-    deadline: {type: DataTypes.DATE}
+    deadline: {type: DataTypes.DATE},
+    order: {type: DataTypes.INTEGER}
 })
 
 UserModel.hasMany(BoardModel)

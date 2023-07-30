@@ -5,7 +5,10 @@ class TodoController {
     async getTodos(req, res, next) {
         try {
             const {boardId} = req.query
-            const todos = await TodoModel.findAll({where: {boardId}})
+            const todos = await TodoModel.findAll({
+                where: {boardId},
+                order: ['order']
+            })
             return res.json(todos)
         } catch (e) {
             return next(ApiError.badRequest(e.message))
@@ -27,6 +30,7 @@ class TodoController {
         try {
 
             const {id, deadline, ...updated} = req.body
+            console.log(updated)
             const date = deadline === '' ? null : deadline
             await TodoModel.update({...updated, deadline: date}, {where: {id}})
             const todo = await TodoModel.findByPk(id)
@@ -49,6 +53,24 @@ class TodoController {
 
         }
     }
+
+    async swapTodos(req, res, next) {
+        try {
+            const {todo1, todo2} = req.body
+            await TodoModel.update({order: todo2.order}, {where: {id: todo1.id}})
+            await TodoModel.update({order: todo1.order}, {where: {id: todo2.id}})
+            const todos = await TodoModel.findAll({
+                where: {boardId: todo1.boardId},
+                order: ['order']
+            })
+            return res.json(todos)
+
+        } catch (e) {
+            console.log(e.message)
+            return next(ApiError.badRequest(e.message))
+        }
+    }
+
 }
 
 module.exports = new TodoController()
