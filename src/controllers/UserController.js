@@ -75,8 +75,6 @@ class UserController {
 
             const token = generateJwt(req.user.id, req.user.login)
 
-            console.log('хуй')
-
             return res.json({token})
 
         } catch (e) {

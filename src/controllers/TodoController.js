@@ -5,40 +5,35 @@ class TodoController {
     async getTodos(req, res, next) {
         try {
             const {boardId} = req.query
-
             const todos = await TodoModel.findAll({where: {boardId}})
-
             return res.json(todos)
-
         } catch (e) {
-            return   next(ApiError.badRequest(e.message))
+            return next(ApiError.badRequest(e.message))
         }
     }
 
     async createTodo(req, res, next) {
         try {
-
-            const {text, description, boardId} = req.body
-
-            const todo = await TodoModel.create({text, description, boardId})
-
+            const {text, description, boardId, deadline} = req.body
+            const date = deadline === '' ? null : deadline
+            const todo = await TodoModel.create({text, description, boardId, deadline: date})
             return res.json(todo)
-
         } catch (e) {
-            return   next(ApiError.badRequest(e.message))
+            next(ApiError.badRequest(e.message))
         }
     }
 
     async updateTodo(req, res, next) {
         try {
 
-            const {id, ...updated} = req.body
-            const result = await TodoModel.update({...updated}, {where: {id}})
+            const {id, deadline, ...updated} = req.body
+            const date = deadline === '' ? null : deadline
+            await TodoModel.update({...updated, deadline: date}, {where: {id}})
             const todo = await TodoModel.findByPk(id)
             return res.json(todo)
 
         } catch (e) {
-           return next(ApiError.badRequest(e.message))
+            return next(ApiError.badRequest(e.message))
         }
     }
 
@@ -50,7 +45,7 @@ class TodoController {
             return res.json(todo)
 
         } catch (e) {
-            return    next(ApiError.badRequest(e.message))
+            return next(ApiError.badRequest(e.message))
 
         }
     }
